@@ -32,11 +32,13 @@ public class Candidate {
 		this.name = name;
 	}
 
-	public Candidate(Long id, String name) {
+	public Candidate(Long id, String name, Integer numberOfVotes) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.numberOfVotes = numberOfVotes;
 	}
+
 	
 	public Candidate() {
 		super();
