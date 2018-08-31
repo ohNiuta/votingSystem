@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmln:th="http://www.thymleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Voting application</title>
+	</head>
+	
+	<body>
+		<h1><span th:text="${citizen.name}">Imię</span> Zagłosuj teraz!</h1>
+		
+		<div th:each="candidate : ${candidates}">
+			<p>Oddaj ogłos na: </p>
+			<a th:href="@{/voteFor(id=${candidate.id})}" th:text="${candidate.name}"></a>
+		</div>
+		
+	</body> 
+</html>

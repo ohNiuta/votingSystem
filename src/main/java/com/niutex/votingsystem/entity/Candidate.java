@@ -42,6 +42,17 @@ public class Candidate {
 		super();
 	}
 	
+	@Column(name="numberofvotes")
+	private Integer numberOfVotes;
+
+	public Integer getNumberOfVotes() {
+		return numberOfVotes;
+	}
+
+	public void setNumberOfVotes(Integer numberOfVotes) {
+		this.numberOfVotes = numberOfVotes;
+	}
+	
 	
 
 }

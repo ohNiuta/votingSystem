@@ -41,5 +41,16 @@ public class Citizen {
 	public Citizen() {
 		super();
 	}
+	
+	@Column(name="hasvoted")
+	private Boolean hasVoted;
+
+	public Boolean getHasVoted() {
+		return hasVoted;
+	}
+
+	public void setHasVoted(Boolean hasVoted) {
+		this.hasVoted = hasVoted;
+	}
 
 }
