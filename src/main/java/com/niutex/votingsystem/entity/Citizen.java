@@ -31,16 +31,6 @@ public class Citizen {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public Citizen(Long id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-	}
-	
-	public Citizen() {
-		super();
-	}
 	
 	@Column(name="hasvoted")
 	private Boolean hasVoted;
@@ -51,6 +41,29 @@ public class Citizen {
 
 	public void setHasVoted(Boolean hasVoted) {
 		this.hasVoted = hasVoted;
+	}
+	
+	@Column(name="votingOwner")
+	private Boolean hasSetVoting;
+
+	public Boolean getHasSetVoting() {
+		return hasSetVoting;
+	}
+
+	public void setHasSetVoting(Boolean hasSetVoting) {
+		this.hasSetVoting = hasSetVoting;
+	}
+	
+	public Citizen(Long id, String name, Boolean hasVoted, Boolean hasSetVoting) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.hasVoted = hasVoted;
+		this.hasSetVoting = hasSetVoting;
+	}
+
+	public Citizen() {
+		super();
 	}
 
 }

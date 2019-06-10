@@ -31,20 +31,8 @@ public class Candidate {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public Candidate(Long id, String name, Integer numberOfVotes) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.numberOfVotes = numberOfVotes;
-	}
-
 	
-	public Candidate() {
-		super();
-	}
-	
-	@Column(name="numberofvotes")
+	@Column(name="number_of_votes")
 	private Integer numberOfVotes;
 
 	public Integer getNumberOfVotes() {
@@ -54,6 +42,33 @@ public class Candidate {
 	public void setNumberOfVotes(Integer numberOfVotes) {
 		this.numberOfVotes = numberOfVotes;
 	}
+	
+	@Column(name="votnig_id")
+	private Long votingId;
+	
+
+	public Long getVotingId() {
+		return votingId;
+	}
+
+	public void setVotingId(Long votingId) {
+		this.votingId = votingId;
+	}
+
+	public Candidate(Long id, String name, Integer numberOfVotes, Long votingId) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.numberOfVotes = numberOfVotes;
+		this.votingId = votingId;
+	}
+
+	
+	public Candidate() {
+		super();
+	}
+	
+	
 	
 	
 

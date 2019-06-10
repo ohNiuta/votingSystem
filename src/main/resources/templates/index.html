@@ -6,10 +6,40 @@
 	</head>
 	
 	<body>
+		<h1>Co chcesz zrobić?</h1>
 		<form action="#" th:action="@{/doLogin}" method="post">
+		
 			<p>Wpisz swoje imię</p>
 			<input type="text" name="name"></input>
-			<input type="submit" value="submit"></submit>
+			
+			<ul>
+				<li>
+					<input type="radio" name="choice" id="choice1" value="goVote"></input>
+					<label for="choice1">Zagłosować</label>
+					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
+				</li>
+			
+			</ul>
+			
+			<ul>
+				<li>
+					<input type="radio" name="choice" id="choice2" value="setVoting"></input>
+					<label for="choice2">Założyć głosowanie</label>
+					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
+				</li>
+			
+			</ul>
+			
+			<ul>
+				<li>
+					<input type="radio" name="choice" id="choice3" value="checkResults"></input>
+					<label for="choice3">Sprawdzić wyniki głosowania</label>
+					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
+				</li>
+			
+			</ul>			
+			
+			<button type="submit" value="submit">Wybieram</submit>
 		</form>
 		
 	</body>
