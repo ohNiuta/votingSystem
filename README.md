@@ -13,6 +13,12 @@
 * JDBC
 * Thymeleaf
 
+## Features
+List of ready features and TODOs for future development
+ * Setup voting
+ * Vote
+ * Check voting results
+
 ## Status
 _in progress_
 
