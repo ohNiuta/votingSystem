@@ -6,12 +6,20 @@
 	</head>
 	
 	<body>
-		<h1><span th:text="${citizen.name}">Imię</span> Zagłosuj teraz!</h1>
+		<h1><span th:text="${session.citizen.name}">Imię</span> zagłosuj teraz!</h1>
 		
-		<div th:each="candidate : ${candidates}">
+		<div th:each="element : ${myVotings}">
+			<h2 th:text="${element.key.votingName}">Nazwa głosowania</h2>
 			<p>Oddaj ogłos na: </p>
-			<a th:href="@{/voteFor(id=${candidate.id})}" th:text="${candidate.name}"></a>
-		</div>
+
+		 	<ul th:each="candidate : ${element.value}">
+		 		<a th:href="@{/voteFor(id=${candidate.id})}"
+		 		 th:text="${candidate.name}"></a>
+			</ul>
+			
+			
+ 
+ 		</div>
 		
 	</body> 
 </html>

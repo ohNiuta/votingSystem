@@ -1,8 +1,17 @@
 package com.niutex.votingsystem.controller;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpSession;
 
+import org.hibernate.Hibernate;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,94 +52,166 @@ public class VotingController {
 	}
 	
 	@RequestMapping("/doLogin")
-	public String doLogin(@RequestParam String name, @RequestParam String choice, Model model,
-			HttpSession session, RedirectAttributes redirectAttr) {
-		
-		logger.info("Getting citizen from database");		
-		Citizen citizen = citizenRepo.findByName(name);
-		
-		logger.info("Getting votings from database");
-		List<Voting> votings = votingRepo.findAll();
-		
-		if (!votings.isEmpty()) {
+	public String doLogin(@RequestParam String name, 
+			@RequestParam String choice,
+			Model model, HttpSession httpSession, RedirectAttributes redirectAttr) {
 			
+		Citizen citizen = citizenRepo.findByName(name);
+		logger.info("Getting citizen from database");	
+		
+		if (citizen == null) {
+			Citizen newCitizen = new Citizen();
+			newCitizen.setName(name);
+			citizenRepo.save(newCitizen);
+			logger.info("New citizen added to database");
+			citizen = newCitizen;
+		}
+		
+		httpSession.setAttribute("citizen", citizen);
+		logger.info("Setting citizen into session");
+		
+		Set<Voting> votings = citizen.getOwnedVotings();
+		model.addAttribute("votings", votings);
+								
+		if (choice.matches("goVote")) {
 			try {
-				logger.info("Setting citizen into session");
-				session.setAttribute("citizen", citizen);
-				model.addAttribute("citizen", citizen);
+				Map<Voting, Set<Candidate>> myVotings = new HashMap<>();
+				Set<Candidate> candidates = new HashSet<>();
+				for (Voting voting : votings) {
+					candidates = voting.getCandidates();
+					myVotings.put(voting, candidates);				
+				}
+				model.addAttribute("myVotings", myVotings);
+				logger.info("Putting myVotings into model");
 				
-				if (choice == "goVote") {
-					if(!citizen.getHasVoted()) {
-						logger.info("Putting candidates into model");
-						List<Candidate> candidates= candidateRepo.findAll();
-						model.addAttribute("candidates",candidates);
-						return "performToVote.html";
-					}
-					
-					else {
-						return "alreadyVoted.html" ;
-					}
-				}
-				
-				else if (choice == "checkResult") {
-					if(citizen.getHasSetVoting()) {
-						return "checkResult.html";
-					}
-					else {
-						redirectAttr.addFlashAttribute("flashMessage", "Nie masz jeszcze swoich głosowań. Załóż swoje głosowanie");
-						return "redirect:/";
-					}
-				}
-				
-				}
-				catch (NullPointerException e){
-					if(citizen == null) {
-						Citizen newCitizen = new Citizen();
-						citizenRepo.save(newCitizen);
-						redirectAttr.addFlashAttribute("flashMessage", "Witaj!");
-						   return "redirect:/";
-					}
-					
-				}
+				return "/performToVote.html";
+			} catch (Exception e) {
+				redirectAttr.addFlashAttribute("flashMessage", "Lista głosowań jest pusta");
+				return "redirect:/index.html";
+			}
 			
 		}
 		
-		
-		
-		Voting voting = new Voting();
-		votingRepo.save(voting);
-		return "setVoting.html";
-		
-		
+		else if (choice.matches("setVoting")) {
+			return "votingDetails.html";
+		}
+		else {
+//			choice.matches(checkResult.html)
+			try {
+				return "checkResults.html";
+						
+			} catch (Exception e) {
+				redirectAttr.addFlashAttribute("flashMessage", "Nie masz jeszcze swoich głosowań. Załóż swoje głosowanie");
+				return "redirect:/";
+			}
+		}
 	}
 	
 	@RequestMapping("/voteFor")
-	public String voteFor(Long id, HttpSession session, Model model) {
+	public String voteFor(@RequestParam Long id, HttpSession session, Model model) {
 		
 		Citizen citizen = (Citizen)session.getAttribute("citizen");
+		model.addAttribute("citizen", citizen);
+		Candidate candidate = candidateRepo.findById((long) id);
+		Voting voting = candidate.getVoting();
 		
-		if (!citizen.getHasVoted()) {
-			
-			logger.info("Citizen " + citizen.getName() + " has voted");
-			citizen.setHasVoted(true);
-						
-			Candidate candidate = candidateRepo.findById((long) id);
-			logger.info("Voting for candidate" + candidate.getName());		
-			candidate.setNumberOfVotes((candidate.getNumberOfVotes()) + 1);
-			
-			citizenRepo.save(citizen);
-			candidateRepo.save(candidate);
-			
-			model.addAttribute("citizen", citizen);
-			
-			return "voted.html";
+		Set<Citizen> citizens = voting.getParticipants();
+//		LazyInitializationException
+		Set<Voting> participations = new HashSet<>();
+		for (Citizen citizenToUpdate : citizens) {
+			if(citizenToUpdate.getId() == (citizen.getId())) {
+				participations = citizenToUpdate.getParticipations();
+			}
 		}
 		
-		return "alreadyVoted.html";
+		if (!participations.isEmpty()) {
+			for (Voting votingToFind : participations) {
+				if (voting.getId().equals(votingToFind.getId())) {
+					return "alreadyVoted.html";
+				}
+			}
+		}
+		
+		try {
+			candidate.setNumberOfVotes((candidate.getNumberOfVotes()) + 1);
+		}
+		catch (NullPointerException e){
+			candidate.setNumberOfVotes(1);
+		}
+		logger.info("Candidate " + candidate.getName() + " has "
+		+ candidate.getNumberOfVotes() + " votes totally");	
 		
 		
+		participations.add(voting);
+		citizen.setParticipations(participations);
 		
+		candidateRepo.save(candidate);
+		citizenRepo.save(citizen);
 		
+		return "voted.html";
 	}
+	
+	@RequestMapping("/setVoting")
+	public String setVoting(@RequestParam String name,
+			@RequestParam String candidate1, @RequestParam String candidate2,
+			@RequestParam String candidate3, HttpSession session,
+			RedirectAttributes redirectAttributes, Model model) {
+		
+		Voting voting = new Voting();
+		Citizen citizen = (Citizen) session.getAttribute("citizen");
+		
+		voting.setVotingName(name);
+//		w tabeli citizens_participations będę zapisywać dopiero jak zagłosują
+//		TODO zapraszanie oosób do głosowania
+		try {
+			voting.getParticipants().add(citizen);
+		} catch (NullPointerException e) {
+			Set<Citizen> newCitizensSet = new HashSet<>();
+			newCitizensSet.add(citizen);
+			voting.setParticipants(newCitizensSet);
+		}
+		votingRepo.saveAndFlush(voting);
+		Set<Candidate> candidates = new HashSet<>();
 
+		
+		Candidate newCandidate1 = new Candidate();
+		newCandidate1.setName(candidate1);
+		newCandidate1.setVoting(voting);
+		candidates.add(newCandidate1);
+		Candidate newCandidate2 = new Candidate();
+		newCandidate2.setName(candidate2);
+		newCandidate2.setVoting(voting);
+		candidates.add(newCandidate2);
+		Candidate newCandidate3 = new Candidate();
+		newCandidate3.setName(candidate3);
+		newCandidate3.setVoting(voting);
+		candidates.add(newCandidate3);
+		
+		candidateRepo.saveAll(candidates);
+		logger.info("New candidate saved to database");
+		
+		voting.setCandidates(candidates);
+		votingRepo.save(voting);
+		logger.info("New voting saved to database");	
+		
+		try {
+			citizen.getOwnedVotings().add(voting);
+		} catch (Exception e) {
+			Set<Voting> newVotingsSet = new HashSet<>();
+			newVotingsSet.add(voting);
+			citizen.setOwnedVotings(newVotingsSet);
+		}
+		citizenRepo.save(citizen);
+
+//		model.addAttribute("message", "Dodałeś szczegóły głosowania");
+		redirectAttributes.addFlashAttribute("flashMessage", "Dodałeś nowe głosowanie");
+
+		return "redirect:/votingDetails.html";
+	}
+	
+	@RequestMapping
+	public String checkResulst() {
+		return null;
+	}
+	
 }

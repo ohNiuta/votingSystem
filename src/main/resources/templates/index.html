@@ -11,11 +11,12 @@
 		
 			<p>Wpisz swoje imię</p>
 			<input type="text" name="name"></input>
+			<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
 			
 			<ul>
 				<li>
-					<input type="radio" name="choice" id="choice1" value="goVote"></input>
-					<label for="choice1">Zagłosować</label>
+					<input type="radio" name="choice" id="choice-vote" value="goVote"></input>
+					<label for="choice-vote">Zagłosować</label>
 					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
 				</li>
 			
@@ -23,8 +24,8 @@
 			
 			<ul>
 				<li>
-					<input type="radio" name="choice" id="choice2" value="setVoting"></input>
-					<label for="choice2">Założyć głosowanie</label>
+					<input type="radio" name="choice" id="choice-set-voting" value="setVoting"></input>
+					<label for="choice-set-voting">Założyć głosowanie</label>
 					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
 				</li>
 			
@@ -32,12 +33,12 @@
 			
 			<ul>
 				<li>
-					<input type="radio" name="choice" id="choice3" value="checkResults"></input>
-					<label for="choice3">Sprawdzić wyniki głosowania</label>
+					<input type="radio" name="choice" id="choice-check-voting" value="checkResults"></input>
+					<label for="choice-check-voting">Sprawdzić wyniki głosowania</label>
 					<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
 				</li>
 			
-			</ul>			
+			</ul>
 			
 			<button type="submit" value="submit">Wybieram</submit>
 		</form>

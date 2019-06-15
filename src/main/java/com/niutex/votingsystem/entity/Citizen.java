@@ -1,8 +1,13 @@
 package com.niutex.votingsystem.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Table(name="citizens")
@@ -11,6 +16,7 @@ public class Citizen {
 	
 	@Id
 	@Column(name="id")
+	@GeneratedValue
 	private Long id;
 
 	public Long getId() {
@@ -31,39 +37,31 @@ public class Citizen {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	@Column(name="hasvoted")
-	private Boolean hasVoted;
-
-	public Boolean getHasVoted() {
-		return hasVoted;
-	}
-
-	public void setHasVoted(Boolean hasVoted) {
-		this.hasVoted = hasVoted;
-	}
-	
-	@Column(name="votingOwner")
-	private Boolean hasSetVoting;
-
-	public Boolean getHasSetVoting() {
-		return hasSetVoting;
-	}
-
-	public void setHasSetVoting(Boolean hasSetVoting) {
-		this.hasSetVoting = hasSetVoting;
-	}
-	
-	public Citizen(Long id, String name, Boolean hasVoted, Boolean hasSetVoting) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.hasVoted = hasVoted;
-		this.hasSetVoting = hasSetVoting;
-	}
 
 	public Citizen() {
 		super();
+	}
+	
+	@ManyToMany
+	private Set<Voting> participations;
+
+	public Set<Voting> getParticipations() {
+		return participations;
+	}
+
+	public void setParticipations(Set<Voting> participations) {
+		this.participations = participations;
+	}
+	
+	@OneToMany
+	private Set<Voting> ownedVotings;
+
+	public Set<Voting> getOwnedVotings() {
+		return ownedVotings;
+	}
+
+	public void setOwnedVotings(Set<Voting> ownedVotings) {
+		this.ownedVotings = ownedVotings;
 	}
 
 }

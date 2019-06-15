@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmln:th="http://www.thymleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Voting application</title>
+	</head>
+	
+	<body>
+		<h1><span th:text="${session.citizen.name}">Imię</span> Sprawdź wyniki głosowania</h1>
+		
+		<div th:each="voting : ${votings}">
+			<ul>
+				<li th:text="${voting.name}">Tytuł głosowania:</p>
+			</ul>
+		</div>
+		
+	</body> 
+</html>

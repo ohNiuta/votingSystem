@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmln:th="http://www.thymleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Voting application</title>
+	</head>
+	
+	<body>
+<!-- 		<h1><span th:text="${citizen.name}">Imię</span> Zagłosuj teraz!</h1>
+		
+		<div th:each="candidate : ${candidates}">
+			<p>Oddaj ogłos na: </p>
+			<a th:href="@{/voteFor(id=${candidate.id})}" th:text="${candidate.name}"></a>
+		</div> -->
+		<a href="/">Home</a>
+		<h1>Twoje nowe głosowanie</h1>
+		
+		<form action="#" th:action="@{/setVoting}" method="post">
+			<label>Nazwa głosowania</label>
+			<input type="text" name="name"></input>
+			<li>
+				<label>Opcja 1</label>
+				<input type="text" name="candidate1"></input>
+			</li>
+			<li>	
+				<label>Opcja 2</label>
+				<input type="text" name="candidate2"></input>
+			</li>
+			<li>
+				<label>Opcja 3</label>
+				<input type="text" name="candidate3"></input>
+			</li>
+			
+			<button type="submit" value="submit">Dodaj głosowanie</button>
+		</form>
+		<div>
+		<span th:if="${flashMessage}" th:text="#{${flashMessage}}">Test</span>
+		</div>
+		
+				
+		
+	</body> 
+</html>

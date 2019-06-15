@@ -2,7 +2,9 @@ package com.niutex.votingsystem.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Table(name="candidates")
@@ -11,6 +13,7 @@ public class Candidate {
 	
 	@Id
 	@Column(name="id")
+	@GeneratedValue
 	private Long id;
 
 	public Long getId() {
@@ -42,34 +45,20 @@ public class Candidate {
 	public void setNumberOfVotes(Integer numberOfVotes) {
 		this.numberOfVotes = numberOfVotes;
 	}
-	
-	@Column(name="votnig_id")
-	private Long votingId;
-	
 
-	public Long getVotingId() {
-		return votingId;
-	}
-
-	public void setVotingId(Long votingId) {
-		this.votingId = votingId;
-	}
-
-	public Candidate(Long id, String name, Integer numberOfVotes, Long votingId) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.numberOfVotes = numberOfVotes;
-		this.votingId = votingId;
-	}
-
-	
 	public Candidate() {
 		super();
 	}
 	
-	
-	
-	
+	@ManyToOne
+	private Voting voting;
+
+	public Voting getVoting() {
+		return voting;
+	}
+
+	public void setVoting(Voting voting) {
+		this.voting = voting;
+	}
 
 }
